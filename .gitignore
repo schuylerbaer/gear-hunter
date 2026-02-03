@@ -9,3 +9,5 @@ data/*.sqlite
 .vscode/
 .idea/
 .crawl4ai/
+test_interface.py
+
