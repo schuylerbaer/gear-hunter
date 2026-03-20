@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from scraper.crawler import get_new_listing_urls
 from scraper.extractor import extract_post_data
 from scraper.ai_parser import parse_gear_with_ai
@@ -13,6 +14,8 @@ SOURCE_MP = 1
 
 def run_scraper_pipeline():
     new_urls = get_new_listing_urls()
+
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Scraper ran. Found {len(new_urls)} new posts.")
     
     if not new_urls:
         return
@@ -30,6 +33,7 @@ def run_scraper_pipeline():
                 author=post_data['author']
             )
         except Exception as e:
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] ERROR on {url}: {e}")
             time.sleep(2)
             continue
 
@@ -64,7 +68,10 @@ def run_scraper_pipeline():
                 time.sleep(0.5)
 
         except Exception as e:
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] ERROR on {url}: {e}")
+            time.sleep(2)
             continue
+
         time.sleep(2)
 
 if __name__ == "__main__":
