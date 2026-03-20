@@ -58,8 +58,11 @@ def run_scraper_pipeline():
                     "brand": str(item_dict.get("brand", "Unknown")),
                     "model": str(item_dict.get("model", "Unknown")),
                     "price": str(item_dict.get("price", "0.0")),
-                    "size": str(item_dict.get("size", "N/A")),
                     "condition": str(item_dict.get("condition", "Unknown"))
+                    "size": str(item_dict.get("size", "N/A")),
+                    "eu_size": str(item_dict.get("eu_size", "Unknown")),
+                    "us_size": str(item_dict.get("us_size", "Unknown")),
+                    "gender": str(item_dict.get("gender", "Unknown")),
                 }
 
                 saved_item_response = insert_child_gear_item(

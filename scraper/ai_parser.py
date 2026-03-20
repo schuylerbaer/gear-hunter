@@ -13,8 +13,11 @@ class ExtractedGear(BaseModel):
     brand: str = Field(description="The brand of the item (e.g., Black Diamond, La Sportiva).")
     model: str = Field(description="The specific model of the item (e.g., Camalot C4, Solution).")
     price: float = Field(description="The current asking price as a number. If free, use 0.0.")
-    size: str = Field(description="The size, length, or variation. Use 'N/A' if not applicable.")
     condition: str = Field(description="The condition of the item. Use 'Unknown' if not stated.")
+    size: str = Field(description="For CAMS ONLY (e.g., '#0.5', '2'). For Shoes, use 'N/A'.")
+    eu_size: str = Field(description="For SHOES ONLY: The EU size (e.g., '38.5'). Use 'Unknown' for cams.")
+    us_size: str = Field(description="For SHOES ONLY: The US size (e.g., '9'). Use 'Unknown' for cams.")
+    gender: str = Field(description="For SHOES ONLY: 'M' or 'W'. Default to 'M' unless explicitly stated as women's sizing.")
 
 # Pydantic post schema
 class GearList(BaseModel):
@@ -31,6 +34,12 @@ def parse_gear_with_ai(raw_text: str):
     2. If a price is missing, estimate it as 0.0.
     3. Infer the brand if it's obvious to a climber (e.g., 'C4' implies Black Diamond).
     4. STRICT FILTER: ONLY extract rock climbing shoes and cams (spring loaded camming devices). Completely ignore all other items (ropes, harnesses, clothing, carabiners, etc.).
+
+    SIZING RULES:
+    1. CAMS: Put the cam size in the 'size' field. Leave 'eu_size', 'us_size', and 'gender' as 'Unknown'.
+    2. SHOES: Put 'N/A' in the `size` field. You MUST extract the 'eu_size', 'us_size', and 'gender'.
+    7. SHOE CONVERSIONS: If a post only lists a US size (e.g., US Men's 9), you MUST use standard climbing shoe conversions to populate the 'eu_size' (e.g., '42'). If it only lists an EU size, estimate the 'us_size'. 
+    8. GENDER: Assume all shoe gender is 'M' for men's unless explicitly stated otherwise or highly probable based on the content of the post.
     
     FORUM TEXT:
     {raw_text}
