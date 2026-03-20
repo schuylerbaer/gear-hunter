@@ -48,3 +48,5 @@ def insert_child_gear_item(listing_id: int, category_id: int, attributes: dict):
 
     if attr_data_list:
         supabase.table("item_attributes").insert(attr_data_list).execute()
+
+    return supabase.table("items").insert(data).execute()
