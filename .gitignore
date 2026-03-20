@@ -36,3 +36,4 @@ local_data.db
 .idea/
 .DS_Store
 Thumbs.db
+*.swp
