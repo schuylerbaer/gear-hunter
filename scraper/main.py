@@ -2,7 +2,9 @@ import time
 from datetime import datetime
 from scraper.crawler import get_new_listing_urls
 from scraper.extractor import extract_post_data
+from scraper.matcher import GearMatcher
 from scraper.ai_parser import parse_gear_with_ai
+from scraper.notifier import EmailNotifier
 from backend.app.db_client import get_or_create_parent_listing, insert_child_gear_item
 
 CATEGORY_MAP = {
@@ -60,11 +62,30 @@ def run_scraper_pipeline():
                     "condition": str(item_dict.get("condition", "Unknown"))
                 }
 
-                insert_child_gear_item(
+                saved_item_response = insert_child_gear_item(
                     listing_id=listing_id,
                     category_id=mapped_category_id,
                     attributes=attributes
                 )
+
+                if saved_item_response and hasattr(saved_item_response, 'data') and len(saved_item_response.data) > 0:
+                    item_id = saved_item_response.data[0]['id']
+
+                    matches = GearMatcher.check_new_item_against_alerts(
+                        new_item_attributes=attributes,
+                        category_id=mapped_category_id
+                    )
+
+                    if matches:
+                        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Found {len(matches)} matches! Processing emails...")
+                        for match in matches:
+                            EmailNotifier.process_and_send(
+                                user_email=match["email"],
+                                alert_id=match["alert_id"],
+                                item_id=item_id,
+                                gear_data={**attributes, "url": post_data['url']}
+                            )
+
                 time.sleep(0.5)
 
         except Exception as e:
