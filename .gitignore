@@ -1,13 +1,13 @@
 .crawl4ai/
 
 # ---------------------------------------------------
-# 1. Credentials & Secrets (CRITICAL)
+# --- Credentials & Secrets ---
 # ---------------------------------------------------
 .env
 .env.*
 
 # ---------------------------------------------------
-# 2. Python Cache & Compiled Files
+# --- Python Cache & Compiled Files ---
 # ---------------------------------------------------
 __pycache__/
 *.pyc
@@ -15,7 +15,7 @@ __pycache__/
 *.pyd
 
 # ---------------------------------------------------
-# 3. Virtual Environments
+# --- Virtual Environments ---
 # ---------------------------------------------------
 venv/
 .venv/
@@ -23,14 +23,14 @@ env/
 .env_dir/
 
 # ---------------------------------------------------
-# 4. Old Local Databases (Just in case!)
+# --- Old Local Databases ---
 # ---------------------------------------------------
 *.db
 *.sqlite3
 local_data.db
 
 # ---------------------------------------------------
-# 5. IDE & OS Junk Files
+# --- IDE & OS Junk Files ---
 # ---------------------------------------------------
 .vscode/
 .idea/
@@ -38,3 +38,14 @@ local_data.db
 Thumbs.db
 *.swp
 *.log
+
+# ---------------------------------------------------
+# --- Frontend (Vite/React) ---
+# ---------------------------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.env
+frontend/.env.*
+frontend/.eslintcache
