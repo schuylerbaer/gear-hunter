@@ -13,8 +13,48 @@ interface FlattenedAlert {
 }
 
 const BRAND_MODELS: Record<string, string[]> = {
-  'La Sportiva': ['Miura VS', 'Solution'],
-  'Scarpa': ['Instinct VSR', 'Boostic']
+  'La Sportiva': [
+    'Finale', 'Futura', 'Genius', 'Kataki', 'Katana Lace', 'Kubo',
+    'Miura', 'Miura VS', 'Otaki', 'Skwama', 'Solution', 'Solution Comp',
+    'Tarantula', 'Tarantulace', 'TC Pro', 'Testarossa', 'Theory'
+  ],
+  'Scarpa': [
+    'Arpia', 'Booster', 'Boostic', 'Chimera', 'Drago', 'Drago LV',
+    'Helix', 'Instinct Lace', 'Instinct S', 'Instinct VS', 'Instinct VSR',
+    'Maestro', 'Origin', 'Vapor Lace', 'Vapor V', 'Velocity'
+  ],
+  'Five Ten': [
+    'Aleon', 'Anasazi Moccasym', 'Anasazi Pro', 'Anasazi VCS', 'Dragon',
+    'Gambit', 'Hiangle', 'Kirigami', 'Niad Lace', 'Niad Mocc', 'Niad VCS',
+    'Rogue', 'Team 5.10'
+  ],
+  'Evolv': [
+    'Defy', 'Elektra', 'General', 'Geshido Lace', 'Geshido VCS', 'Kira',
+    'Kronos', 'Phantom', 'Phantom LV', 'Shaman', 'Shaman LV', 'Shaman Pro',
+    'Shaman Pro LV', 'Zenist', 'Zenist LV'
+  ],
+  'Black Diamond': [
+    'Aspect', 'Focus', 'Momentum', 'Shadow', 'Shadow LV', 'Zone', 'Zone LV'
+  ],
+  'Unparallel': [
+    'Flagship', 'Flagship LV', 'Regulus', 'Regulus LV', 'Sirius Lace',
+    'TN Pro', 'TN Pro LV', 'Up Rise', 'Vim'
+  ],
+  'Tenaya': [
+    'Iati', 'Indalo', 'Mastia', 'Mundaka', 'Oasi', 'Oasi LV', 'Ra', 'Tarifa'
+  ],
+  'Mad Rock': [
+    'Drifter', 'Drone HV', 'Drone LV', 'Remora', 'Shark', 'Weaver'
+  ],
+  'Butora': [
+    'Acro', 'Acro Narrow', 'Endeavor', 'Gomi', 'Gomi Narrow', 'Narsha'
+  ],
+  'Boreal': [
+    'Dharma', 'Joker', 'Mutant'
+  ],
+  'Ocun': [
+    'Bullit', 'Jett', 'Ozone', 'Ozone HV', 'Strike'
+  ]
 }
 
 export default function Dashboard() {
