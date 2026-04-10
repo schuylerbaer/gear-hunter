@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './services/supabaseClient'
 import Auth from './pages/Auth'
-import GearFeed from './pages/GearFeed'
+import Dashboard from './pages/Dashboard'
 
 function App() {
   const [session, setSession] = useState<any>(null)
@@ -23,7 +23,7 @@ function App() {
   // If no session exists, show Auth. Otherwise, show the GearFeed.
   return (
     <div className="min-h-screen bg-base-200">
-      {!session ? <Auth /> : <GearFeed />}
+      {!session ? <Auth /> : <Dashboard />}
     </div>
   )
 }
