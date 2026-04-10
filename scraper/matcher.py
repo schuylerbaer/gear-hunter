@@ -39,15 +39,27 @@ class GearMatcher:
         return users_to_notify
 
     @staticmethod
-    def check_new_alert_against_items(criteria_dict: dict, category_id: int):
-        """
-        Runs when a user creates a new alert.
-        Searches the database for existing gear that matches their criteria.
-        Expects criteria_dict like: {"brand": "La Sportiva", "size": "42"}
-        """
-
-        response = supabase.table("items").select("*").eq(
-            "category_id", category_id
-        ).contains("attributes", criteria_dict).execute()
-
-        return response.data
+        def check_alert_against_recent_items(alert_criteria: list, category_id: int):
+            """
+            Fetches the last 30 items in the category and checks for a match.
+            """
+            response = supabase.table("items").select(
+                "id, listings(url), item_attributes(key, value)"
+            ).eq("category_id", category_id).order("id", desc=True).limit(30).execute()
+        
+            matches = []
+            for item in response.data:
+                attrs = {attr["key"]: attr["value"] for attr in item.get("item_attributes", [])}
+            
+                is_match = all(
+                    attrs.get(c["key"]) == c["value"]
+                    for c in alert_criteria
+                )
+            
+                if is_match:
+                    matches.append({
+                        "item_id": item["id"],
+                        "url": item["listings"]["url"] if item.get("listings") else "#",
+                        "attributes": attrs
+                    })
+            return matches

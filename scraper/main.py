@@ -98,5 +98,40 @@ def run_scraper_pipeline():
 
         time.sleep(2)
 
+    run_retroactive_alert_sweep()
+
+def run_retroactive_alert_sweep():
+    """
+    Sweeps all active alerts against recently scraped items.
+    Relies on EmailNotifier to prevent duplicate emails.
+    """
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Running retroactive alert sweep...")
+
+    alerts_response = supabase.table("alerts").select(
+        "id, user_id, users(email), category_id, alert_criteria(key, value)"
+    ).eq("is_active", True).execute()
+
+    for alert in alerts_response.data:
+        alert_id = alert["id"]
+        user_email = alert["users"]["email"]
+        category_id = alert["category_id"]
+        criteria = alert.get("alert_criteria", [])
+
+        if not criteria:
+            continue
+
+        recent_matches = GearMatcher.check_alert_against_recent_items(criteria, category_id)
+
+        for match in recent_matches:
+            item_id = match["item_id"]
+            gear_data = {**match["attributes"], "url": match["url"]}
+
+            EmailNotifier.process_and_send(
+                user_email=user_email,
+                alert_id=alert_id,
+                item_id=item_id,
+                gear_data=gear_data
+            )
+
 if __name__ == "__main__":
     run_scraper_pipeline()
