@@ -64,7 +64,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAlertId, setEditingAlertId] = useState<number | null>(null)
   
-  const [formData, setFormData] = useState({ category: 'Shoe', brand: 'La Sportiva', model: 'Miura VS', size: '42', gender: 'U' })
+  const [formData, setFormData] = useState({ category: 'Shoe', brand: '', model: '', size: '42', gender: 'U' })
   const [sizeUnit, setSizeUnit] = useState<'EU' | 'US'>('EU')
   
   useEffect(() => {
@@ -125,7 +125,7 @@ export default function Dashboard() {
 
   const openNewAlertModal = () => {
     setEditingAlertId(null)
-    setFormData({ category: 'Shoe', brand: 'La Sportiva', model: 'Miura VS', size: '42', gender: 'U' }) 
+    setFormData({ category: 'Shoe', brand: '', model: '', size: '42', gender: 'U' }) 
     setSizeUnit('EU')
     setIsModalOpen(true)
   }
@@ -138,6 +138,11 @@ export default function Dashboard() {
   }
 
   const saveAlert = async () => {
+    if (!formData.brand || !formData.model) {
+        alert("Please select both a brand and a model!")
+        return
+    }
+
     // --- PREVENT DUPLICATES ---
     if (!editingAlertId) {
       const isDuplicate = alerts.some(a =>
@@ -215,7 +220,7 @@ export default function Dashboard() {
     setFormData({
       ...formData,
       brand: newBrand,
-      model: BRAND_MODELS[newBrand][0] 
+      model: ''
     })
   }
 
@@ -307,6 +312,8 @@ export default function Dashboard() {
                   value={formData.brand}
                   onChange={handleBrandChange} 
                 >
+                  {}
+                  <option value="" disabled>Select a brand</option>
                   {Object.keys(BRAND_MODELS).map(brand => (
                     <option key={brand} value={brand}>{brand}</option>
                   ))}
@@ -320,7 +327,12 @@ export default function Dashboard() {
                   value={formData.model}
                   onChange={(e) => setFormData({...formData, model: e.target.value})}
                 >
-                  {BRAND_MODELS[formData.brand].map(model => (
+                  {/* Dynamic placeholder */}
+                  <option value="" disabled>
+                    {formData.brand ? 'Select a model' : 'Select a brand first'}
+                  </option>
+                  {/* Only map the models if a brand actually exists */}
+                  {formData.brand && BRAND_MODELS[formData.brand].map(model => (
                     <option key={model} value={model}>{model}</option>
                   ))}
                 </select>
