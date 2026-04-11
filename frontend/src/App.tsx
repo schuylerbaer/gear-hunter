@@ -1,18 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './services/supabaseClient'
-import Auth from './pages/Auth'
-import Dashboard from './pages/Dashboard'
 
-function App() {
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+import Dashboard from './pages/Dashboard'
+import Settings from './pages/Settings'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import ResetPassword from './pages/ResetPassword'
+
+export default function App() {
   const [session, setSession] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      setLoading(false)
     })
 
-    // Listen for login/logout events
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
@@ -20,12 +27,30 @@ function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // If no session exists, show Auth. Otherwise, show the GearFeed.
+  if (loading) return null
+
   return (
-    <div className="min-h-screen bg-base-200">
-      {!session ? <Auth /> : <Dashboard />}
-    </div>
+    <BrowserRouter>
+      <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-100">
+        <Navbar session={session} />
+        
+        <Routes>
+          <Route path="/" element={session ? <Navigate to="/dashboard" /> : <Home />} />
+
+          <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/signup" element={session ? <Navigate to="/dashboard" /> : <Signup />} />
+          <Route path="/reset-password" element={session ? <Navigate to="/dashboard" /> : <ResetPassword />} />
+
+          <Route
+            path="/dashboard"
+            element={session ? <Dashboard /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/settings"
+            element={session ? <Settings /> : <Navigate to="/" />}
+          />
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }
-
-export default App
