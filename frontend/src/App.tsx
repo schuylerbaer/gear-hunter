@@ -5,6 +5,7 @@ import { supabase } from './services/supabaseClient'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
+import Browse from './pages/Browse'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -48,6 +49,10 @@ export default function App() {
           <Route
             path="/settings"
             element={session ? <Settings /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/browse"
+            element={session ? <Browse /> : <Navigate to="/" />}
           />
         </Routes>
       </div>

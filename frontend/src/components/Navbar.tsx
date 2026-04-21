@@ -17,7 +17,7 @@ export default function Navbar({ session }: { session: any }) {
           {!session ? (
             <>
               <Link to="/login" className="text-slate-500 hover:text-slate-900 transition-colors">
-                Sign in
+                Sign in 
               </Link>
               <Link to="/signup" className="bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition-colors shadow-sm">
                 Get Started
@@ -27,6 +27,9 @@ export default function Navbar({ session }: { session: any }) {
             <>
               <Link to="/dashboard" className="text-slate-600 hover:text-blue-600 transition-colors">
                 Dashboard
+              </Link>
+              <Link to="/browse" className="text-slate-600 hover:text-blue-600 transition-colors">
+                Browse
               </Link>
               
               {/* User Dropdown */}
