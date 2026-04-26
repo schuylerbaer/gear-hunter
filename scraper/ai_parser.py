@@ -34,6 +34,7 @@ def parse_gear_with_ai(raw_text: str):
     2. If a price is missing, estimate it as 0.0.
     3. Infer the brand if it's obvious to a climber (e.g., 'C4' implies Black Diamond).
     4. STRICT FILTER: ONLY extract rock climbing shoes and cams (spring loaded camming devices). Completely ignore all other items (ropes, harnesses, clothing, carabiners, etc.).
+    5. FIX ALL TYPOS: for example, if someone lists 'la sportiiva muira', you must change it to 'La Sportiva Miura'. This even applies for making it plural if it isn't officially supposed to be ('Miuras should be Miura'). This applies to brand, model, size, or any other category.
 
     SIZING RULES:
     1. CAMS: Put the cam size in the 'size' field. Leave 'eu_size', 'us_size', and 'gender' as 'Unknown'.

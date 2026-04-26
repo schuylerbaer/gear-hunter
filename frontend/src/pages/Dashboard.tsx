@@ -2,6 +2,42 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabaseClient'
 import { usePageTitle } from '../hooks/usePageTitle'
 
+const ALIAS_MAP: Record<string, string> = {
+  'fiveten': 'Five Ten',
+  'FiveTen': 'Five Ten',
+  'five ten': 'Five Ten',
+  'unparallel': 'Unparallel',
+  'un parallel': 'Unparallel',
+  'acoba': 'Acopa',
+  'lasportiva': 'La Sportiva',
+  'la sportiva': 'La Sportiva',
+
+  'tarantulace': 'Tarantulace',
+  'tarantula lace': 'Tarantulace',
+  'tc pro': 'TC Pro',
+  'tc pros': 'TC Pro',
+  'miuras': 'Miura',
+  'muiras': 'Miura',
+  'muiras lace': 'Miura',
+  'miuras lace': 'Miura',
+  'muira': 'Miura',
+  'muira lace': 'Miura',
+  'miura lace': 'Miura',
+  'miuras vs': 'Miura VS',
+  'muiras vs': 'Miura VS',
+  'muira vs': 'Miura VS',
+  'solutions': 'Solution',
+}
+
+// Helper function to clean strings
+const normalizeString = (rawStr: string) => {
+  if (!rawStr) return ''
+  const cleanStr = rawStr.trim()
+  const lowerStr = cleanStr.toLowerCase()
+
+  return ALIAS_MAP[lowerStr] || cleanStr
+}
+
 const EU_SIZES = Array.from({ length: 29 }, (_, i) => (34 + i * 0.5).toString())
 const US_SIZES = Array.from({ length: 23 }, (_, i) => (4 + i * 0.5).toString())
 
@@ -75,8 +111,8 @@ export default function Dashboard() {
       const modelAttr = attrs.find((attr: any) => attr.key === 'model')
 
       if (brandAttr && brandAttr.value && modelAttr && modelAttr.value) {
-        const brand = brandAttr.value
-        const model = modelAttr.value
+        const brand = normalizeString(brandAttr.value)
+        const model = normalizeString(modelAttr.value)
 
         if (!brandModelMap[brand]) {
           brandModelMap[brand] = new Set()
