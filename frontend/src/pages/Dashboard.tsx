@@ -2,20 +2,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabaseClient'
 import { usePageTitle } from '../hooks/usePageTitle'
 
-const BRAND_MODELS: Record<string, string[]> = {
-  'La Sportiva': ['Finale', 'Futura', 'Genius', 'Kataki', 'Katana Lace', 'Kubo', 'Miura', 'Miura VS', 'Otaki', 'Skwama', 'Solution', 'Solution Comp', 'Tarantula', 'Tarantulace', 'TC Pro', 'Testarossa', 'Theory'],
-  'Scarpa': ['Arpia', 'Booster', 'Boostic', 'Chimera', 'Drago', 'Drago LV', 'Helix', 'Instinct Lace', 'Instinct S', 'Instinct VS', 'Instinct VSR', 'Maestro', 'Origin', 'Vapor Lace', 'Vapor V', 'Velocity'],
-  'Five Ten': ['Aleon', 'Anasazi Moccasym', 'Anasazi Pro', 'Anasazi VCS', 'Dragon', 'Gambit', 'Hiangle', 'Kirigami', 'Niad Lace', 'Niad Mocc', 'Niad VCS', 'Rogue', 'Team 5.10'],
-  'Evolv': ['Defy', 'Elektra', 'General', 'Geshido Lace', 'Geshido VCS', 'Kira', 'Kronos', 'Phantom', 'Phantom LV', 'Shaman', 'Shaman LV', 'Shaman Pro', 'Shaman Pro LV', 'Zenist', 'Zenist LV'],
-  'Black Diamond': ['Aspect', 'Focus', 'Momentum', 'Shadow', 'Shadow LV', 'Zone', 'Zone LV'],
-  'Unparallel': ['Flagship', 'Flagship LV', 'Regulus', 'Regulus LV', 'Sirius Lace', 'TN Pro', 'TN Pro LV', 'Up Rise', 'Vim'],
-  'Tenaya': ['Iati', 'Indalo', 'Mastia', 'Mundaka', 'Oasi', 'Oasi LV', 'Ra', 'Tarifa'],
-  'Mad Rock': ['Drifter', 'Drone HV', 'Drone LV', 'Remora', 'Shark', 'Weaver'],
-  'Butora': ['Acro', 'Acro Narrow', 'Endeavor', 'Gomi', 'Gomi Narrow', 'Narsha'],
-  'Boreal': ['Dharma', 'Joker', 'Mutant'],
-  'Ocun': ['Bullit', 'Jett', 'Ozone', 'Ozone HV', 'Strike']
-}
-
 const EU_SIZES = Array.from({ length: 29 }, (_, i) => (34 + i * 0.5).toString())
 const US_SIZES = Array.from({ length: 23 }, (_, i) => (4 + i * 0.5).toString())
 
@@ -26,6 +12,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAlertId, setEditingAlertId] = useState<number | null>(null)
   
+  const [dynamicBrandModels, setDynamicBrandModels] = useState<Record<string, string[]>>({})
   const [formData, setFormData] = useState({ category: 'Shoe', brand: '', model: '', size: '', gender: 'U' })
   const [sizeUnit, setSizeUnit] = useState('EU')
   const [loading, setLoading] = useState(true)
@@ -35,6 +22,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetchAlerts()
     fetchRecentMatches()
+    fetchBrandModels()
   }, [])
 
   const fetchAlerts = async () => {
@@ -62,6 +50,47 @@ export default function Dashboard() {
     }
 
     setLoading(false)
+  }
+
+  const fetchBrandModels = async () => {
+    const { data, error } = await supabase
+      .from('items')
+      .select(`
+        id,
+        item_attributes (key, value)
+      `)
+      .eq('category_id', 1)
+
+    if (error) {
+      console.error("Error fetching brand models:", error)
+      return
+    }
+
+    const brandModelMap: Record<string, Set<string>> = {}
+
+    data.forEach((item: any) => {
+      const attrs = item.item_attributes
+
+      const brandAttr = attrs.find((attr: any) => attr.key === 'brand')
+      const modelAttr = attrs.find((attr: any) => attr.key === 'model')
+
+      if (brandAttr && brandAttr.value && modelAttr && modelAttr.value) {
+        const brand = brandAttr.value
+        const model = modelAttr.value
+
+        if (!brandModelMap[brand]) {
+          brandModelMap[brand] = new Set()
+        }
+        brandModelMap[brand].add(model)
+      }
+    })
+
+    const formattedMap: Record<string, string[]> = {}
+    Object.keys(brandModelMap).sort().forEach(brand => {
+      formattedMap[brand] = Array.from(brandModelMap[brand]).sort();
+    })
+
+    setDynamicBrandModels(formattedMap)
   }
 
   const fetchRecentMatches = async () => {
@@ -426,7 +455,7 @@ export default function Dashboard() {
                   onChange={handleBrandChange} 
                 >
                   <option value="" disabled>Select a Brand</option>
-                  {Object.keys(BRAND_MODELS).map(brand => (
+                  {Object.keys(dynamicBrandModels).map(brand => (
                     <option key={brand} value={brand}>{brand}</option>
                   ))}
                 </select>
@@ -434,14 +463,14 @@ export default function Dashboard() {
 
               <div>
                 <label className="block text-sm font-semibold text-slate-900 mb-2">Model</label>
-                <select 
+                <select
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all appearance-none disabled:opacity-50"
                   value={formData.model}
                   onChange={(e) => setFormData({...formData, model: e.target.value})}
                   disabled={!formData.brand}
                 >
                   <option value="" disabled>{formData.brand ? 'Select a Model' : 'Select a Brand first'}</option>
-                  {formData.brand && BRAND_MODELS[formData.brand].map(model => (
+                  {formData.brand && dynamicBrandModels[formData.brand] && dynamicBrandModels[formData.brand].map(model => (
                     <option key={model} value={model}>{model}</option>
                   ))}
                 </select>
