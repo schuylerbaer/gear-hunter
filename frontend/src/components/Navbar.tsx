@@ -1,9 +1,26 @@
 import { Link } from 'react-router-dom'
 import { supabase } from '../services/supabaseClient'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function Navbar({ session }: { session: any }) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  
+  // 1. Create the reference
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // 2. Add the click-outside listener
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
@@ -32,8 +49,8 @@ export default function Navbar({ session }: { session: any }) {
                 Browse
               </Link>
               
-              {/* User Dropdown */}
-              <div className="relative">
+              {/* 3. Attach the ref to the parent div of the dropdown */}
+              <div className="relative" ref={dropdownRef}>
                 <button 
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors"
@@ -43,7 +60,7 @@ export default function Navbar({ session }: { session: any }) {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 py-1 flex flex-col">
+                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 flex flex-col">
                     <Link 
                       to="/settings" 
                       onClick={() => setDropdownOpen(false)}
